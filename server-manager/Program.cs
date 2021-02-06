@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace server_manager
 {
@@ -35,7 +36,9 @@ namespace server_manager
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddMvcCore();
+            services
+                .AddMvcCore()
+                .AddJsonFormatters(j => j.Formatting = Formatting.Indented);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,17 +48,29 @@ namespace server_manager
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseMvc();
         }
     }
 
     public class MyEndpoint : Controller
     {
+        public class StateOutput
+        {
+            public bool isOnline { get; set; }
+            public int connectedUsers { get; set; }
+            public bool isMaintenance { get; set; }
+        }
+
         [Route("")]
         public IActionResult Get()
         {
-            return new OkResult();
+            return new JsonResult(new StateOutput()
+            {
+                isOnline = true,
+                connectedUsers = 10,
+                isMaintenance = false
+            });
         }
     }
 }
