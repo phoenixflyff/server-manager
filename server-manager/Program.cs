@@ -1,4 +1,5 @@
-﻿using System;
+﻿using server_manager.Utils;
+using System;
 
 namespace server_manager
 {
@@ -6,7 +7,7 @@ namespace server_manager
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Logger.LogMessage(Logger.LogLevel.INFO, "Hello {0}", "World");
         }
     }
 }
