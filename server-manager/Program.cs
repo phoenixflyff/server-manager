@@ -1,10 +1,8 @@
 ﻿using server_manager.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace server_manager
 {
@@ -21,56 +19,20 @@ namespace server_manager
               ThisAssembly.Git.Commit));
 
             Logger.LogMessage(Logger.LogLevel.INFO, "Starting Webserver.");
-            CreateWebHostBuilder(args).Build().Run();
+            try
+            {
+                CreateWebHostBuilder(args).Build().Run();
+            }
+            catch (System.Exception ex)
+            {
+                Logger.LogMessage(Logger.LogLevel.ERROR, ex.Message);
+                Logger.LogMessage(Logger.LogLevel.ERROR, ex.StackTrace);
+                
+            }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
-    }
-
-    public class Startup
-    {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {
-
-            services
-                .AddMvcCore()
-                .AddJsonFormatters(j => j.Formatting = Formatting.Indented);
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            
-            app.UseMvc();
-        }
-    }
-
-    public class MyEndpoint : Controller
-    {
-        public class StateOutput
-        {
-            public bool isOnline { get; set; }
-            public int connectedUsers { get; set; }
-            public bool isMaintenance { get; set; }
-        }
-
-        [Route("")]
-        public IActionResult Get()
-        {
-            return new JsonResult(new StateOutput()
-            {
-                isOnline = true,
-                connectedUsers = 10,
-                isMaintenance = false
-            });
-        }
     }
 }
